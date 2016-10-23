@@ -1,1 +1,111 @@
-ыаыаыа
+<!DOCTYPE html>
+<html ng-app="app">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta charset="utf-8">
+		<title>Тайм-трекер.</title>
+		<script src="/angular.min.js"></script>
+		<script src="/routeController.js"></script>
+		<link rel="stylesheet" href="/bootstrap.min.css">
+		<link rel="stylesheet" href="/style.css">
+	</head>
+	
+	<body ng-controller="routeController">
+		<span id="timeControl"></span>
+		<img src="clock.jpg" alt="clock" class="pull-right"/>
+		<h1>Тайм-трекер</h1>
+		<div id="controlClock">
+			<a class="btn btn-default" href="javascript:showClock();">Показать время</a>
+			<a class="btn btn-default" href="javascript:startClock();">Запустить время</a>
+			<a class="btn btn-default" href="javascript:stopClock();">Остановить время</a>
+		</div>
+		<form>
+    
+		<table class="table table-striped" border="1" class="animate-if" >
+			<thead><tr>
+				<th></th>
+				<th>Задача</th>
+				<th>Время(ч.)</th>
+				<th>Стоимость задачи(р.)</th>
+				<th>Итого времени и стоимость(р.)</th>
+				<th colspan = "2" style = "text-align:center;">Действия</th> 
+			</tr></thead>
+			<tbody><tr ng-repeat="person in personList_body | orderBy : person.name">
+			<!--<td><button class="btn btn-link" ng-click="select(person)">выбрать</button></td>-->
+				<td><input type="checkbox" name="Person" ng-model="person.$deleted"  ng-init="checked=false"/></td>
+				<td ng-bind="person.name"></td>
+				<td ng-bind="person.time_for_work"></td>
+				<td ng-bind="person.task_cost"></td>
+				<td ng-bind="person.time_for_work == null || person.task_cost == null ? '' : person.time_for_work * person.task_cost">{{person.task_cost}}</td>
+				<td><button class="btn btn-danger" ng-click="del($index);">удалить</button></td>
+				<td><button class="btn btn-info" ng-click="edit(person)">Редактировать</button></td>
+			</tr></tbody>
+		</table>
+	 
+		<button class="btn btn-primary btn-lg pull-left" ng-click="add();">Добавить</button><!--ng-click="add(personList_body,{})"-->
+		<button class="btn btn-danger btn-lg pull-right" ng-click="del_several();">Удалить несколько</button>
+		<div class="clearfix"></div>
+
+		<form class="form-horizontal" name="person" ng-if="checked && nowEditingItem" class="animate-if"><!--ng-if="showFormType === 'person'"-->
+			<div class="row">
+				<div class="form-group">
+					<label class="col-lg-1 control-label">Задача</label>
+					<div class="col-lg-3">
+						<input class="form-control" name="name" ng-model="nowEditingItem.name"><!--ng-model="selected.person_id"-->
+					</div>
+			    </div>
+			    <div class="form-group">
+					<label class="col-lg-2 control-label">Время</label>
+					<div class="col-lg-3">
+						<input class="form-control" name="time_for_work" ng-model="nowEditingItem.time_for_work" pattern="[0-9]{1,}" placeholder="Цифры без букв и символов">
+					</div>
+			    </div>
+			</div>
+			<div class="row">
+				<div class="form-group">
+					<label class="col-lg-1 control-label">Стоимость задачи</label>
+					<div class="col-lg-3">
+						<input class="form-control" name="task_cost" pattern="[0-9]{1,}" ng-model="nowEditingItem.task_cost" placeholder="Цифры без букв и символов">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-lg-2 control-label">Итого времени и стоимость</label>
+					<div class="col-lg-3">
+						<div class="form-control" name="time_and_cost" 
+							ng-bind="nowEditingItem.task_cost == null ||nowEditingItem.time_for_work == null ? '' : nowEditingItem.task_cost * nowEditingItem.time_for_work">
+							{{nowEditingItem.time_and_cost}}
+					   </div>
+					</div>
+				</div>
+			</div>
+		</form>
+		
+		<script>
+			var timer;
+			function showClock(){
+			
+				var	timeControl = document.getElementById("timeControl"), 
+					now = new Date(), 
+					cur_time = now.toLocaleTimeString(),//15:23:33
+					cur_time_split = cur_time.split(":"),//15,23,33
+					hous = +cur_time_split[0]+1,//16
+					time_res = '';
+					
+					cur_time_split[0] = hous;
+					time_res = cur_time_split.join(':');
+					timeControl.innerHTML = time_res;
+			}
+			
+			function startClock() {
+				timer = window.setInterval('showClock()',1000);
+			}
+			
+			function stopClock() {
+				window.clearInterval(timer);
+				timer = null;
+				//timeControl.innerText = " ";
+			}
+		
+		</script>
+	</body>
+</html>
